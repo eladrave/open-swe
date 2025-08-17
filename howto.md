@@ -4,7 +4,10 @@ This guide shows how to run the Open SWE CLI and includes examples for common ta
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and add your API keys.
+1. Generate a `.env` file:
+   ```bash
+   python scripts/setup_env.py
+   ```
 2. Install dependencies and build the workspace:
    ```bash
    yarn install
@@ -29,7 +32,19 @@ This guide shows how to run the Open SWE CLI and includes examples for common ta
    ```
    Create a simple React app that shows "Hello, world" on the homepage.
    ```
-4. Approve the plan and watch the agent generate the project files.
+   The planner proposes a plan:
+   ```text
+   planner Plan
+   1. Initialize project
+   2. Add React entry point
+   ```
+   Use ←/→ to approve or deny.
+4. After approving, the developer view streams actions:
+   ```text
+   developer created package.json
+   developer added src/App.tsx
+   developer updated index.html
+   ```
 
 ## Create a full stack app
 
@@ -42,7 +57,14 @@ This guide shows how to run the Open SWE CLI and includes examples for common ta
    ```
    Build a full stack TODO app with an Express API, a SQLite database, and a React front end. Include scripts to run the server and client.
    ```
-4. Approve each plan step. The agent will create API routes, database schema, and UI components.
+   You'll see a planner summary similar to:
+   ```text
+   planner Plan
+   1. Scaffold Express API
+   2. Create SQLite schema
+   3. Build React UI
+   ```
+4. Approve each step and monitor the developer log as files and commands execute.
 
 ## Work in an existing repository
 

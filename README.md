@@ -44,7 +44,11 @@ Open SWE can be used in multiple ways:
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your API keys and settings. The CLI reads this unencrypted file when running locally.
+Run the interactive setup script to generate `.env` from `.env.example`:
+```bash
+python scripts/setup_env.py
+```
+The CLI reads this unencrypted file when running locally.
 
 ## Docker
 
