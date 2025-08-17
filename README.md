@@ -40,6 +40,7 @@ Open SWE can be used in multiple ways:
 
 - 🖥️ **From the UI**. You can create, manage and execute Open SWE tasks from the [web application](https://swe.langchain.com). See the ['From the UI' page](https://docs.langchain.com/labs/swe/usage/ui) in the docs for more information.
 - 📝 **From GitHub**. You can start Open SWE tasks directly from GitHub issues simply by adding a label `open-swe`, or `open-swe-auto` (adding `-auto` will cause Open SWE to automatically accept the plan, requiring no intervention from you). For enhanced performance on complex tasks, use `open-swe-max` or `open-swe-max-auto` labels which utilize Claude Opus 4.1 for both planning and programming. See the ['From GitHub' page](https://docs.langchain.com/labs/swe/usage/github) in the docs for more information.
+- 💻 **From the CLI**. Run the agent in your terminal against a local project. See [howto.md](./howto.md) for step-by-step examples.
 
 ## Configuration
 
