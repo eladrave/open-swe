@@ -41,6 +41,35 @@ Open SWE can be used in multiple ways:
 - 🖥️ **From the UI**. You can create, manage and execute Open SWE tasks from the [web application](https://swe.langchain.com). See the ['From the UI' page](https://docs.langchain.com/labs/swe/usage/ui) in the docs for more information.
 - 📝 **From GitHub**. You can start Open SWE tasks directly from GitHub issues simply by adding a label `open-swe`, or `open-swe-auto` (adding `-auto` will cause Open SWE to automatically accept the plan, requiring no intervention from you). For enhanced performance on complex tasks, use `open-swe-max` or `open-swe-max-auto` labels which utilize Claude Opus 4.1 for both planning and programming. See the ['From GitHub' page](https://docs.langchain.com/labs/swe/usage/github) in the docs for more information.
 
+## Configuration
+
+Copy `.env.example` to `.env` and fill in your API keys and settings. The CLI reads this unencrypted file when running locally.
+
+## Docker
+
+You can build and run Open SWE in a Docker container:
+
+1. **Build the image**
+   ```bash
+   docker build -t open-swe .
+   ```
+2. **Run the container**
+   ```bash
+   docker run -d --name open-swe \
+     -p 2024:2024 \
+     -v /path/to/your/project:/workspace/project \
+     open-swe
+   ```
+3. **Start the CLI**
+   ```bash
+   docker exec -it \
+     -e OPEN_SWE_LOCAL_PROJECT_PATH=/workspace/project \
+     open-swe \
+     yarn workspace @open-swe/cli cli
+   ```
+
+This launches the LangGraph server inside the container and attaches the CLI to the mounted repository.
+
 # Documentation
 
 To get started using Open SWE locally, see the [documentation here](https://docs.langchain.com/labs/swe/).

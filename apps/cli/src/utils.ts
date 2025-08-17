@@ -9,6 +9,7 @@ import {
   LOCAL_MODE_HEADER,
 } from "@open-swe/shared/constants";
 import { formatDisplayLog } from "./logger.js";
+import { isAgentInboxInterruptSchema } from "@open-swe/shared/agent-inbox-interrupt";
 
 const LANGGRAPH_URL = process.env.LANGGRAPH_URL || "http://localhost:2024";
 
@@ -61,7 +62,7 @@ export async function submitFeedback({
     let programmerStreamed = false;
     // Process the stream response
     for await (const chunk of stream) {
-      const formatted = formatDisplayLog(chunk);
+      const formatted = formatDisplayLog(chunk, "PLANNER");
       if (formatted.length > 0) {
         setLogs((prev) => [...prev, ...formatted]);
       }
@@ -80,9 +81,22 @@ export async function submitFeedback({
           chunkData.programmerSession.threadId,
           chunkData.programmerSession.runId,
         )) {
-          const formatted = formatDisplayLog(programmerChunk);
+          const formatted = formatDisplayLog(programmerChunk, "DEVELOPER");
           if (formatted.length > 0) {
             setLogs((prev) => [...prev, ...formatted]);
+          }
+          const interruptArr =
+            programmerChunk.data &&
+            Array.isArray(programmerChunk.data["__interrupt__"])
+              ? programmerChunk.data["__interrupt__"]
+              : undefined;
+          const firstInterruptValue =
+            interruptArr && interruptArr[0] && interruptArr[0].value
+              ? interruptArr[0].value
+              : undefined;
+          if (isAgentInboxInterruptSchema(firstInterruptValue)) {
+            setStreamingPhase("awaitingFeedback");
+            return;
           }
         }
       }
