@@ -28,7 +28,7 @@ export class StreamingService {
     client: Client,
     programmerThreadId: string,
     programmerRunId: string,
-  ) {
+  ): Promise<{ needsFeedback: boolean }> {
     for await (const programmerChunk of client.runs.joinStream(
       programmerThreadId,
       programmerRunId,
@@ -37,12 +37,28 @@ export class StreamingService {
       },
     )) {
       if (programmerChunk.event === "updates") {
-        const formatted = formatDisplayLog(programmerChunk);
+        const formatted = formatDisplayLog(programmerChunk, "DEVELOPER");
         if (formatted.length > 0) {
           this.callbacks.setLogs((prev) => [...prev, ...formatted]);
         }
       }
+
+      const interruptArr =
+        programmerChunk.data &&
+        Array.isArray(programmerChunk.data["__interrupt__"])
+          ? programmerChunk.data["__interrupt__"]
+          : undefined;
+      const firstInterruptValue =
+        interruptArr && interruptArr[0] && interruptArr[0].value
+          ? interruptArr[0].value
+          : undefined;
+
+      if (isAgentInboxInterruptSchema(firstInterruptValue)) {
+        return { needsFeedback: true };
+      }
     }
+
+    return { needsFeedback: false };
   }
 
   private async handlePlannerStream(
@@ -60,7 +76,7 @@ export class StreamingService {
       },
     )) {
       if (subChunk.event === "updates") {
-        const formatted = formatDisplayLog(subChunk);
+        const formatted = formatDisplayLog(subChunk, "PLANNER");
         // Filter out human messages from planner stream (already logged in manager)
         const filteredFormatted = formatted.filter(
           (log) => !log.startsWith("[HUMAN]"),
@@ -78,11 +94,14 @@ export class StreamingService {
         typeof subChunk.data.programmerSession.runId === "string"
       ) {
         programmerStreamed = true;
-        await this.handleProgrammerStream(
+        const programmerResult = await this.handleProgrammerStream(
           client,
           subChunk.data.programmerSession.threadId,
           subChunk.data.programmerSession.runId,
         );
+        if (programmerResult.needsFeedback) {
+          return { needsFeedback: true };
+        }
       }
 
       // Detect HumanInterrupt in planner stream
@@ -112,7 +131,7 @@ export class StreamingService {
 
     for await (const chunk of client.runs.joinStream(threadId, runId)) {
       if (chunk.event === "updates") {
-        const formatted = formatDisplayLog(chunk);
+        const formatted = formatDisplayLog(chunk, "MANAGER");
         if (formatted.length > 0) {
           this.callbacks.setLogs((prev) => {
             if (prev.length === 0) {

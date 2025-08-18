@@ -10,9 +10,9 @@ A command-line interface for Open SWE that provides a terminal-based chat experi
 ## Development
 
 1. Install dependencies: `yarn install`
-2. Create a `.env` file and set `OPEN_SWE_LOCAL_PROJECT_PATH` to point to an existing git repository:
+2. From the repository root, generate a `.env` and set `OPEN_SWE_LOCAL_PROJECT_PATH`:
    ```bash
-   echo "OPEN_SWE_LOCAL_PROJECT_PATH=/path/to/your/git/repository" > .env
+   python scripts/setup_env.py
    ```
 3. Build the CLI: `yarn build`
 4. Run the CLI: `yarn cli`

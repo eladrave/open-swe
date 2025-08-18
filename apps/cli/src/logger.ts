@@ -249,7 +249,10 @@ function formatToolResult(message: ToolMessage): string {
   }
 }
 
-export function formatDisplayLog(chunk: LogChunk | string): string[] {
+export function formatDisplayLog(
+  chunk: LogChunk | string,
+  role?: "MANAGER" | "PLANNER" | "DEVELOPER",
+): string[] {
   if (typeof chunk === "string") {
     if (chunk.startsWith("Human feedback:")) {
       return [
@@ -469,7 +472,7 @@ export function formatDisplayLog(chunk: LogChunk | string): string[] {
       );
     }
   }
-  return logs;
+  return role ? logs.map((l) => `[${role}] ${l}`) : logs;
 }
 
 /**
